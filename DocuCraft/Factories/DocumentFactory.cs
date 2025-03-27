@@ -8,6 +8,8 @@ namespace DocuCraft.Factories
          => type.ToLower() switch
          {
              "plaintext" => new PlainTextDocument(title),
+             "markdown" => new MarkdownDocument(title),
+             "richtext" => new RichTextDocument(title),
              _ => throw new ArgumentException("Неизвестный тип документа."),
          };
     }
