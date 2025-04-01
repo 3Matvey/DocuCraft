@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using DocuCraft.Common.ResultPattern;
 using DocuCraft.Domain.Entities;
+using DocuCraft.Domain.Factories;
 using DocuCraft.Domain.Interfaces;
 
 namespace DocuCraft.Infrastructure.Formats
@@ -9,7 +10,6 @@ namespace DocuCraft.Infrastructure.Formats
     {
         public string Serialize(Document doc)
         {
-            // Включаем тип документа, чтобы при десериализации можно было создать нужный объект
             var obj = new
             {
                 DocumentType = doc.GetType().Name,
@@ -23,25 +23,23 @@ namespace DocuCraft.Infrastructure.Formats
         {
             try
             {
-                using (JsonDocument jsonDoc = JsonDocument.Parse(data))
-                {
-                    var root = jsonDoc.RootElement;
-                    if (!root.TryGetProperty("DocumentType", out var typeElement))
-                        return Error.Failure("JsonLoadError", "Отсутствует свойство DocumentType.");
+                using var jsonDoc = JsonDocument.Parse(data);
+                var root = jsonDoc.RootElement;
 
-                    string docType = typeElement.GetString() ?? "";
-                    string title = root.GetProperty("Title").GetString() ?? "";
-                    string content = root.GetProperty("Content").GetString() ?? "";
+                if (!root.TryGetProperty("DocumentType", out var typeElement))
+                    return Error.Failure("JsonDeserializeError", "Отсутствует свойство DocumentType.");
 
-                    // Используем фабрику для создания документа нужного типа
-                    Document doc = Domain.Factories.DocumentFactory.CreateDocument(docType, title);
-                    doc.Content = content;
-                    return doc;
-                }
+                string docType = typeElement.GetString() ?? "";
+                string title = root.GetProperty("Title").GetString() ?? "";
+                string content = root.GetProperty("Content").GetString() ?? "";
+
+                Document doc = DocumentFactory.CreateDocument(docType, title);
+                doc.Content = content;
+                return Result<Document>.Success(doc);
             }
             catch (Exception ex)
             {
-                return Error.Failure("JsonLoadError", ex.Message);
+                return Error.Failure("JsonDeserializeError", ex.Message);
             }
         }
     }

@@ -16,7 +16,7 @@ namespace DocuCraft.Domain.Entities
         }
 
         // Абстрактный метод для формирования имени файла
-        protected abstract string GetFileName(string format);
+        public abstract string GetFileName(string format);
 
         // Методы редактирования, например:
         public virtual void InsertText(string text, int position)

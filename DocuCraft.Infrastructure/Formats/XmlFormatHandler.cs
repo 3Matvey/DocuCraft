@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Xml.Linq;
 using DocuCraft.Common.ResultPattern;
 using DocuCraft.Domain.Entities;
 using DocuCraft.Domain.Factories;
@@ -8,45 +9,31 @@ namespace DocuCraft.Infrastructure.Formats
 {
     public class XmlFormatHandler : IFormatHandler
     {
-        public Result Save(Document doc, string fileName)
+        public string Serialize(Document doc)
         {
-            try
-            {
-                var xml = new XElement("Document",
-                            new XElement("DocumentType", doc.GetType().Name),
-                            new XElement("Title", doc.Title),
-                            new XElement("Content", doc.Content));
-                xml.Save(fileName);
-                Console.WriteLine($"Документ сохранён как {fileName}");
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                return Error.Failure("XmlSaveError", ex.Message);
-            }
+            var xml = new XElement("Document",
+                        new XElement("DocumentType", doc.GetType().Name),
+                        new XElement("Title", doc.Title),
+                        new XElement("Content", doc.Content));
+            return xml.ToString();
         }
 
-        public Result<Document> Load(string fileName)
+        public Result<Document> Deserialize(string data)
         {
             try
             {
-                if (!File.Exists(fileName))
-                    return Error.NotFound("FileNotFound", $"Файл {fileName} не найден.");
-
-                XElement xml = XElement.Load(fileName);
+                XElement xml = XElement.Parse(data);
                 string docType = xml.Element("DocumentType")?.Value ?? "";
                 string title = xml.Element("Title")?.Value ?? "";
                 string content = xml.Element("Content")?.Value ?? "";
 
-                // Создаем документ нужного типа через фабрику
-                Document doc = DocumentFactory.CreateDocumentByType(docType, title);
+                Document doc = DocumentFactory.CreateDocument(docType, title);
                 doc.Content = content;
-                Console.WriteLine($"Документ {fileName} успешно загружен (XML).");
-                return doc;
+                return Result<Document>.Success(doc);
             }
             catch (Exception ex)
             {
-                return Error.Failure("XmlLoadError", ex.Message);
+                return Error.Failure("XmlDeserializeError", ex.Message);
             }
         }
     }

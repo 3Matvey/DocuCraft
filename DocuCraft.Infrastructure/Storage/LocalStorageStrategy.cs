@@ -1,32 +1,30 @@
-﻿namespace DocuCraft.Infrastructure.Storage
+﻿using DocuCraft.Application.Storage;
+using DocuCraft.Common.ResultPattern;
+using DocuCraft.Domain.Entities;
+using DocuCraft.Domain.Interfaces;
+
+namespace DocuCraft.Infrastructure.Storage
 {
-    public class LocalStorageStrategy 
-        : IStorageStrategy
+    public class LocalStorageStrategy : IStorageStrategy
     {
-        public Result Save(Document document, string format)
+        private readonly IDocumentRepository _repository;
+
+        public LocalStorageStrategy(IDocumentRepository repository)
         {
-            try
-            {
-                document.Save(format);
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                return Error.Failure("LS001", ex.Message);
-            }
+            _repository = repository;
         }
 
-        public Result Load(Document document, string filePath)
+        public Result Save(Document document, string format)
         {
-            try
-            {
-                document.Load(filePath);
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                return Error.Failure("LS002", ex.Message);
-            }
+            // Формирование имени файла может делаться через доменный метод (если он доступен)
+            // Здесь используем наивное формирование имени: "Title.format"
+            string fileName = document.GetFileName(format);
+            return _repository.Save(document, fileName);
+        }
+
+        public Result<Document> Load(string filePath)
+        {
+            return _repository.Load(filePath);
         }
     }
 }
