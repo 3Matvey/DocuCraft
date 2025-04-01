@@ -1,9 +1,4 @@
-﻿using System;
-using DocuCraft.Managers;
-using DocuCraft.Models;
-using DocuCraft.ResultPattern;
-
-namespace DocuCraft
+﻿namespace DocuCraft.Presentation
 {
     public class Terminal
     {
