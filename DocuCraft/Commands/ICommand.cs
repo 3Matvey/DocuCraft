@@ -1,8 +1,10 @@
-﻿namespace DocuCraft.Commands
+﻿using DocuCraft.ResultPattern;
+
+namespace DocuCraft.Commands
 {
     public interface ICommand
     {
-        void Execute();
-        void UnExecute();
+        Result Execute();
+        Result UnExecute();
     }
 }

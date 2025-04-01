@@ -1,6 +1,7 @@
 ﻿using DocuCraft.Models;
+using DocuCraft.Storage;
 
-namespace DocuCraft.Storage
+namespace DocuCraft.Managers
 {
     public class StorageManager(IStorageStrategy strategy)
     {

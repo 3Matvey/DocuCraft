@@ -1,10 +1,11 @@
 ﻿using DocuCraft.Models;
+using DocuCraft.ResultPattern;
 
 namespace DocuCraft.Storage
 {
     public interface IStorageStrategy
     {
-        void Save(Document document, string format);
-        void Load(Document document, string filePath);
+        Result Save(Document document, string format);
+        Result Load(Document document, string filePath);
     }
 }

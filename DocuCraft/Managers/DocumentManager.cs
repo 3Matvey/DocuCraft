@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using DocuCraft.Models;
+﻿using DocuCraft.Models;
 using DocuCraft.Factories;
+using DocuCraft.ResultPattern;
 
 namespace DocuCraft.Managers
 {
@@ -9,50 +8,54 @@ namespace DocuCraft.Managers
     {
         private readonly Dictionary<string, Document> _documents = [];
 
-        // Создание нового документа
-        public Document CreateDocument(string type, string title)
+        // Создание нового документа с возвратом Result<Document>
+        public Result<Document> CreateDocument(string type, string title)
         {
             if (_documents.ContainsKey(title))
+                return Error.Failure("DOC001", "Документ с таким названием уже существует");
+
+            try
             {
-                throw new Exception("Документ с таким названием уже существует.");
+                Document doc = DocumentFactory.CreateDocument(type, title);
+                _documents.Add(title, doc);
+                return Result<Document>.Success(doc);
             }
-            Document doc = DocumentFactory.CreateDocument(type, title);
-            _documents.Add(title, doc);
-            return doc;
-        }
-
-        // Открытие документа из файловой системы
-        public Document OpenDocument(string type, string title, string filePath)
-        {
-            Document doc = DocumentFactory.CreateDocument(type, title);
-            doc.Load(filePath);
-            _documents[title] = doc;
-            return doc;
-        }
-
-        // Получение документа для редактирования
-        public Document GetDocument(string title)
-        {
-            if (_documents.TryGetValue(title, out Document? doc))
+            catch (Exception ex)
             {
-                return doc;
+                return Error.Failure("DOC002", ex.Message);
             }
-            throw new Exception("Документ не найден.");
         }
 
-        // Удаление документа
-        public void DeleteDocument(string title)
+        // Открытие документа из файловой системы с возвратом Result<Document>
+        public Result<Document> OpenDocument(string type, string title, string filePath)
         {
-            if (_documents.Remove(title))
-                Console.WriteLine($"Документ {title} удалён из менеджера.");
-            else
-                Console.WriteLine($"Документ {title} не найден.");
+            try
+            {
+                Document doc = DocumentFactory.CreateDocument(type, title);
+                doc.Load(filePath);
+                _documents[title] = doc;
+                return Result<Document>.Success(doc);
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("DOC003", ex.Message);
+            }
         }
+
+        // Получение документа для редактирования с возвратом Result<Document>
+        public Result<Document> GetDocument(string title)
+            => _documents.TryGetValue(title, out Document? doc)
+                ? Result<Document>.Success(doc)
+                : Error.NotFound("DOC004", "Документ не найден");
+
+        // Удаление документа с возвратом Result
+        public Result DeleteDocument(string title)
+            => _documents.Remove(title)
+                ? Result.Success()
+                : Error.NotFound("DOC005", "Документ не найден");
 
         // Вывод списка открытых документов
         public IEnumerable<Document> ListDocuments()
-        {
-            return _documents.Values;
-        }
+            => _documents.Values;
     }
 }

@@ -1,17 +1,36 @@
-﻿using DocuCraft.Models;
+﻿using System;
+using DocuCraft.Models;
+using DocuCraft.ResultPattern;
 
 namespace DocuCraft.Storage
 {
-    public class LocalStorageStrategy : IStorageStrategy
+    public class LocalStorageStrategy 
+        : IStorageStrategy
     {
-        public void Save(Document document, string format)
+        public Result Save(Document document, string format)
         {
-            document.Save(format);
+            try
+            {
+                document.Save(format);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("LS001", ex.Message);
+            }
         }
 
-        public void Load(Document document, string filePath)
+        public Result Load(Document document, string filePath)
         {
-            document.Load(filePath);
+            try
+            {
+                document.Load(filePath);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("LS002", ex.Message);
+            }
         }
     }
 }

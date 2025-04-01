@@ -1,4 +1,5 @@
 ﻿using DocuCraft.Models;
+using DocuCraft.ResultPattern;
 
 namespace DocuCraft.Commands
 {
@@ -7,16 +8,32 @@ namespace DocuCraft.Commands
     {
         private string _deletedText = string.Empty;
 
-        public void Execute()
+        public Result Execute()
         {
-            // Сохраняем удаляемый текст для возможности отмены операции
-            _deletedText = document.Content.Substring(position, length);
-            document.DeleteText(position, length);
+            try
+            {
+                // Сохраняем удаляемый текст для возможности отмены
+                _deletedText = document.Content.Substring(position, length);
+                document.DeleteText(position, length);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("DEL001", ex.Message);
+            }
         }
 
-        public void UnExecute()
+        public Result UnExecute()
         {
-            document.InsertText(_deletedText, position);
+            try
+            {
+                document.InsertText(_deletedText, position);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("DEL002", ex.Message);
+            }
         }
     }
 }

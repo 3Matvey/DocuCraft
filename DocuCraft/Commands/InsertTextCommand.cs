@@ -1,18 +1,34 @@
 ﻿using DocuCraft.Models;
+using DocuCraft.ResultPattern;
 
 namespace DocuCraft.Commands
 {
-    public class InsertTextCommand(Document document, string text, int position) 
-        : ICommand
+    public class InsertTextCommand(Document document, string text, int position) : ICommand
     {
-        public void Execute()
+        public Result Execute()
         {
-            document.InsertText(text, position);
+            try
+            {
+                document.InsertText(text, position);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("INS001", ex.Message);
+            }
         }
 
-        public void UnExecute()
+        public Result UnExecute()
         {
-            document.DeleteText(position, text.Length);
+            try
+            {
+                document.DeleteText(position, text.Length);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("INS002", ex.Message);
+            }
         }
     }
 }
