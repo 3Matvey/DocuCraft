@@ -1,25 +1,42 @@
-﻿namespace DocuCraft.Models
+﻿using DocuCraft.Factories;
+using DocuCraft.Formats;
+using DocuCraft.ResultPattern;
+
+namespace DocuCraft.Models
 {
     public abstract class Document(string title)
     {
         public string Title { get; set; } = title;
-        public string Content { get; set; } = "";
+        public string Content { get; set; } = string.Empty;
 
-        public abstract void Save(string format);
-        public abstract void Load(string filePath);
-
-        public virtual void InsertText(string text, int position)
+        public virtual Result Save(string format)
         {
-            if (position < 0 || position > Content.Length)
-                throw new ArgumentOutOfRangeException(nameof(position), "Неверная позиция для вставки текста.");
-            Content = Content.Insert(position, text);
+            try
+            {
+                IFormatHandler handler = FormatHandlerFactory.GetHandler(format);
+                string fileName = GetFileName(format);
+                return handler.Save(this, fileName);
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("SaveError", ex.Message);
+            }
         }
 
-        public virtual void DeleteText(int position, int length)
+        public virtual Result<Document> Load(string format, string filePath)
         {
-            if (position < 0 || position + length > Content.Length)
-                throw new ArgumentOutOfRangeException(nameof(position), "Неверные параметры для удаления текста.");
-            Content = Content.Remove(position, length);
+            try
+            {
+                IFormatHandler handler = FormatHandlerFactory.GetHandler(format);
+                return handler.Load(filePath);
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("LoadError", ex.Message);
+            }
         }
+
+        protected abstract string GetFileName(string format);
+       
     }
 }

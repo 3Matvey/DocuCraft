@@ -1,47 +1,28 @@
-﻿//using DocuCraft.Models;
-
-//namespace DocuCraft.Factories
-//{
-//    public static class DocumentFactory
-//    {
-//        public static Document CreateDocument(string type, string title)
-//         => type.ToLower() switch
-//         {
-//             "plaintext" => new PlainTextDocument(title),
-//             "markdown" => new MarkdownDocument(title),
-//             "richtext" => new RichTextDocument(title),
-//             _ => throw new ArgumentException("Неизвестный тип документа."),
-//         };
-//    }
-//}
-using DocuCraft.Models;
+﻿using DocuCraft.Models;
 
 namespace DocuCraft.Factories
 {
     public static class DocumentFactory
     {
-        // Используем словарь для регистрации фабричных методов по типу документа.
-        private static readonly Dictionary<string, Func<string, Document>> _creators =
-            new(StringComparer.OrdinalIgnoreCase)
-            {
-                ["plaintext"] = title => new PlainTextDocument(title),
-                ["markdown"] = title => new MarkdownDocument(title),
-                ["richtext"] = title => new RichTextDocument(title)
-            };
-        
-        // Позволяем расширять фабрику, регистрируя новые типы документов
-        public static void RegisterDocumentCreator(string type, Func<string, Document> creator)
-        {
-            _creators[type] = creator;
-        }
-
         public static Document CreateDocument(string type, string title)
         {
-            if (_creators.TryGetValue(type, out var creator))
+            return type.ToLower() switch
             {
-                return creator(title);
+                "plaintext" or "plaintextdocument" => new PlainTextDocument(title),
+                "markdown" or "markdowndocument" => new MarkdownDocument(title),
+                "richtext" or "richtextdocument" => new RichTextDocument(title),
+                _ => throw new ArgumentException("Неизвестный тип документа."),
+            };
+        }
+
+        public static Document CreateDocumentByType(string docType, string title)
+        {
+            string normalized = docType.ToLower();
+            if (normalized.EndsWith("document"))
+            {
+                normalized = normalized.Substring(0, normalized.Length - "document".Length);
             }
-            throw new ArgumentException("Неизвестный тип документа.", nameof(type));
+            return CreateDocument(normalized, title);
         }
     }
 }
