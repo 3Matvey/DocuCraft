@@ -50,10 +50,10 @@ namespace DocuCraft.Application.Managers
         {
             try
             {
-                Document doc = DocumentFactory.CreateDocument(type, title);
                 var loadResult = await storageStrategy.LoadAsync(filePath);
+                var doc = loadResult.Value;
                 if (!loadResult.IsSuccess)
-                    return loadResult;
+                    return loadResult.Error!;
 
                 _documents[title] = doc;
                 return Result<Document>.Success(doc);

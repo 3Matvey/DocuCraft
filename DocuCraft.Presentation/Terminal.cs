@@ -1,8 +1,6 @@
 ﻿using DocuCraft.Application.Commands;
 using DocuCraft.Application.Managers;
-using DocuCraft.Common.ResultPattern;
 using DocuCraft.Domain.Entities;
-using DocuCraft.Domain.Interfaces;
 
 namespace DocuCraft.Presentation
 {

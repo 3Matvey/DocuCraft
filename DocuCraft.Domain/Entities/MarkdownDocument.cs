@@ -1,6 +1,4 @@
-﻿using DocuCraft.Domain.Interfaces;
-
-namespace DocuCraft.Domain.Entities
+﻿namespace DocuCraft.Domain.Entities
 {
     public class MarkdownDocument(string title) 
         : Document(title)

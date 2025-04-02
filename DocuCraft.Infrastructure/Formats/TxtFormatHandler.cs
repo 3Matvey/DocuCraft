@@ -1,5 +1,4 @@
-﻿using System;
-using DocuCraft.Common.ResultPattern;
+﻿using DocuCraft.Common.ResultPattern;
 using DocuCraft.Domain.Entities;
 using DocuCraft.Domain.Interfaces;
 

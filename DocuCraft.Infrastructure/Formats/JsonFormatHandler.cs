@@ -34,7 +34,7 @@ namespace DocuCraft.Infrastructure.Formats
                 string content = root.GetProperty("Content").GetString() ?? "";
 
                 Document doc = DocumentFactory.CreateDocument(docType, title);
-                doc.Content = content;
+                doc.InsertText(content);
                 return Result<Document>.Success(doc);
             }
             catch (Exception ex)

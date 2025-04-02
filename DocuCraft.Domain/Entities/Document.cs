@@ -1,7 +1,4 @@
-﻿using DocuCraft.Common.ResultPattern;
-using DocuCraft.Domain.Interfaces;
-
-namespace DocuCraft.Domain.Entities
+﻿namespace DocuCraft.Domain.Entities
 {
     public abstract class Document
     {
@@ -19,7 +16,7 @@ namespace DocuCraft.Domain.Entities
         public abstract string GetFileName(string format);
 
         // Методы редактирования, например:
-        public virtual void InsertText(string text, int position)
+        public virtual void InsertText(string text, int position = 0)
         {
             if (position < 0 || position > Content.Length)
                 throw new ArgumentOutOfRangeException(nameof(position), "Неверная позиция для вставки текста.");
