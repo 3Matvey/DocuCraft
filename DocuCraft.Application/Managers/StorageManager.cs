@@ -2,16 +2,23 @@
 
 namespace DocuCraft.Application.Managers
 {
-    public class StorageManager(IStorageStrategy strategy)
+    public class StorageManager(IStorageStrategy initialStrategy)
     {
-        public void SaveDocument(Document document, string format)
+        public void SetStorageStrategy(IStorageStrategy newStrategy)
         {
-            strategy.Save(document, format);
+            initialStrategy = newStrategy;
         }
 
-        public void LoadDocument(Document document, string filePath)
+        public IStorageStrategy GetStorageStrategy() => initialStrategy;
+
+        public Task<Result> SaveDocumentAsync(Document document, string format)
         {
-            strategy.Load(document, filePath);
+            return initialStrategy.SaveAsync(document, format);
+        }
+
+        public Task<Result<Document>> LoadDocumentAsync(string filePath)
+        {
+            return initialStrategy.LoadAsync(filePath);
         }
     }
 }

@@ -1,13 +1,10 @@
-﻿namespace DocuCraft.Presentation
-{
-    public class Terminal
-    {
-        private readonly DocumentManager _docManager;
+﻿using DocuCraft.Application.Managers;
 
-        public Terminal(DocumentManager docManager)
-        {
-            _docManager = docManager;
-        }
+namespace DocuCraft.Presentation
+{
+    public class Terminal(DocumentManager docManager)
+    {
+        private readonly DocumentManager _docManager = docManager;
 
         public void Run()
         {
@@ -28,7 +25,7 @@
                         CreateDocument();
                         break;
                     case "2":
-                        OpenDocument();
+                        OpenDocumentAsync();
                         break;
                     case "3":
                         ListDocuments();
@@ -101,7 +98,7 @@
                 Console.WriteLine($"Ошибка: {result.Error?.Description}");
         }
 
-        private void OpenDocument()
+        private async Task OpenDocumentAsync()
         {
             string type = GetDocumentType();
             Console.Write("Введите название документа: ");
@@ -111,7 +108,7 @@
             if (string.IsNullOrEmpty(filePath))
                 filePath = Environment.CurrentDirectory;
 
-            var result = _docManager.OpenDocument(type, title, filePath);
+            var result = await _docManager.OpenDocumentAsync(type, title, filePath);
             if (result.IsSuccess)
             {
                 Console.WriteLine($"Документ \"{title}\" успешно открыт.");
@@ -145,58 +142,58 @@
                 Console.WriteLine($"Ошибка: {result.Error?.Description}");
         }
 
-        private void EditDocument()
-        {
-            Console.Write("Введите название документа для редактирования: ");
-            string title = Console.ReadLine()?.Trim() ?? "";
-            var resultGet = _docManager.GetDocument(title);
-            if (!resultGet.IsSuccess)
-            {
-                Console.WriteLine($"Ошибка: {resultGet.Error?.Description}");
-                return;
-            }
+        //private void EditDocument()
+        //{
+        //    Console.Write("Введите название документа для редактирования: ");
+        //    string title = Console.ReadLine()?.Trim() ?? "";
+        //    var resultGet = _docManager.GetDocument(title);
+        //    if (!resultGet.IsSuccess)
+        //    {
+        //        Console.WriteLine($"Ошибка: {resultGet.Error?.Description}");
+        //        return;
+        //    }
 
-            Document docToEdit = resultGet.Value;
-            Console.WriteLine("Текущий контент:");
-            Console.WriteLine(docToEdit.Content);
-            Console.Write("Введите текст для вставки: ");
-            string text = Console.ReadLine() ?? "";
-            int position = GetIntegerInput("Введите позицию вставки: ");
-            try
-            {
-                docToEdit.InsertText(text, position);
-                Console.WriteLine("Текст успешно вставлен.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка редактирования: {ex.Message}");
-            }
-        }
+        //    Document docToEdit = resultGet.Value;
+        //    Console.WriteLine("Текущий контент:");
+        //    Console.WriteLine(docToEdit.Content);
+        //    Console.Write("Введите текст для вставки: ");
+        //    string text = Console.ReadLine() ?? "";
+        //    int position = GetIntegerInput("Введите позицию вставки: ");
+        //    try
+        //    {
+        //        docToEdit.InsertText(text, position);
+        //        Console.WriteLine("Текст успешно вставлен.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Ошибка редактирования: {ex.Message}");
+        //    }
+        //}
 
-        private void SaveDocument()
-        {
-            Console.Write("Введите название документа для сохранения: ");
-            string title = Console.ReadLine()?.Trim() ?? "";
-            var resultGet = _docManager.GetDocument(title);
-            if (!resultGet.IsSuccess)
-            {
-                Console.WriteLine($"Ошибка: {resultGet.Error?.Description}");
-                return;
-            }
+        //private void SaveDocument()
+        //{
+        //    Console.Write("Введите название документа для сохранения: ");
+        //    string title = Console.ReadLine()?.Trim() ?? "";
+        //    var resultGet = _docManager.GetDocument(title);
+        //    if (!resultGet.IsSuccess)
+        //    {
+        //        Console.WriteLine($"Ошибка: {resultGet.Error?.Description}");
+        //        return;
+        //    }
 
-            Document docToSave = resultGet.Value;
-            Console.Write("Введите формат для сохранения (txt, json, xml): ");
-            string format = Console.ReadLine()?.Trim().ToLower() ?? "";
-            try
-            {
-                docToSave.Save(format);
-                Console.WriteLine($"Документ \"{title}\" успешно сохранён.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка сохранения: {ex.Message}");
-            }
-        }
+        //    Document docToSave = resultGet.Value;
+        //    Console.Write("Введите формат для сохранения (txt, json, xml): ");
+        //    string format = Console.ReadLine()?.Trim().ToLower() ?? "";
+        //    try
+        //    {
+        //        docToSave.Save(format);
+        //        Console.WriteLine($"Документ \"{title}\" успешно сохранён.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Ошибка сохранения: {ex.Message}");
+        //    }
+        //}
 
         private static int GetIntegerInput(string prompt)
         {

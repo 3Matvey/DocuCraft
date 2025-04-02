@@ -8,7 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Storage\" />
+    <Compile Remove="Storage\**" />
+    <EmbeddedResource Remove="Storage\**" />
+    <None Remove="Storage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DocuCraft.Application\DocuCraft.Application.csproj" />
+    <ProjectReference Include="..\DocuCraft.Common\DocuCraft.Common.csproj" />
+    <ProjectReference Include="..\DocuCraft.Infrastructure\DocuCraft.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

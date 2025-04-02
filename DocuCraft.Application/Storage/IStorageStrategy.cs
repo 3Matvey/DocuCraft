@@ -2,7 +2,10 @@
 {
     public interface IStorageStrategy
     {
-        Result Save(Document document, string format);
-        Result<Document> Load(string filePath);
+        Task<Result> SaveAsync(Document document, string format);
+        Task<Result<Document>> LoadAsync(string filePath);
+        Task<Result> DeleteAsync(string filePath);
     }
+
+    public interface ILocalStorageStrategy : IStorageStrategy;
 }

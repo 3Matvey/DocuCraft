@@ -1,4 +1,6 @@
-﻿namespace DocuCraft.Application.Services
+﻿using DocuCraft.Application.Storage;
+
+namespace DocuCraft.Application.Services
 {
     public sealed class SettingsManager
     {

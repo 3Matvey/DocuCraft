@@ -5,26 +5,60 @@ using DocuCraft.Domain.Interfaces;
 
 namespace DocuCraft.Infrastructure.Storage
 {
-    public class LocalStorageStrategy : IStorageStrategy
+    public class LocalStorageStrategy(IFormatHandler formatHandler) : 
+        IStorageStrategy
     {
-        private readonly IDocumentRepository _repository;
-
-        public LocalStorageStrategy(IDocumentRepository repository)
+        public async Task<Result> SaveAsync(Document document, string format)
         {
-            _repository = repository;
+            try
+            {
+                string fileName = document.GetFileName(format);
+                string serializedData = formatHandler.Serialize(document);
+
+                await File.WriteAllTextAsync(fileName, serializedData);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("LocalSaveError", ex.Message);
+            }
         }
 
-        public Result Save(Document document, string format)
+        public async Task<Result<Document>> LoadAsync(string filePath)
         {
-            // Формирование имени файла может делаться через доменный метод (если он доступен)
-            // Здесь используем наивное формирование имени: "Title.format"
-            string fileName = document.GetFileName(format);
-            return _repository.Save(document, fileName);
+            try
+            {
+                if (!File.Exists(filePath))
+                    return Error.NotFound("FileNotFound", $"Файл {filePath} не найден.");
+
+                string data = await File.ReadAllTextAsync(filePath);
+                return formatHandler.Deserialize(data);
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("LocalLoadError", ex.Message);
+            }
         }
 
-        public Result<Document> Load(string filePath)
+        // Реализация метода удаления документа
+        public Task<Result> DeleteAsync(string filePath)
         {
-            return _repository.Load(filePath);
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                    return Task.FromResult(Result.Success());
+                }
+                else
+                {
+                    return Task.FromResult<Result>(Error.NotFound("FileNotFound", $"Файл {filePath} не найден."));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult<Result>(Error.Failure("LocalDeleteError", ex.Message));
+            }
         }
     }
 }
