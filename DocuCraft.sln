@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocuCraft.Presentation", "DocuCraft\DocuCraft.Presentation.csproj", "{866974FC-8CF8-4490-A5ED-3C727BE879CA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocuCraft.Domain", "DocuCraft.Domain\DocuCraft.Domain.csproj", "{F3BEFAB6-552B-4329-BB99-0D59AFB95B92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocuCraft.Application", "DocuCraft.Application\DocuCraft.Application.csproj", "{CDE30A06-96CC-4D50-B930-9977CC27C913}"
@@ -13,16 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocuCraft.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocuCraft.Common", "DocuCraft.Common\DocuCraft.Common.csproj", "{2EC28B42-89DC-4921-99E7-45754D7191AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocuCraft.Presentation", "DocuCraft.Presentation\DocuCraft.Presentation.csproj", "{2E1D3BE6-CFD6-EB8F-5345-2CC2E53C7766}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{866974FC-8CF8-4490-A5ED-3C727BE879CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{866974FC-8CF8-4490-A5ED-3C727BE879CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{866974FC-8CF8-4490-A5ED-3C727BE879CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{866974FC-8CF8-4490-A5ED-3C727BE879CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3BEFAB6-552B-4329-BB99-0D59AFB95B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3BEFAB6-552B-4329-BB99-0D59AFB95B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3BEFAB6-552B-4329-BB99-0D59AFB95B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +35,10 @@ Global
 		{2EC28B42-89DC-4921-99E7-45754D7191AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EC28B42-89DC-4921-99E7-45754D7191AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EC28B42-89DC-4921-99E7-45754D7191AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E1D3BE6-CFD6-EB8F-5345-2CC2E53C7766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E1D3BE6-CFD6-EB8F-5345-2CC2E53C7766}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E1D3BE6-CFD6-EB8F-5345-2CC2E53C7766}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E1D3BE6-CFD6-EB8F-5345-2CC2E53C7766}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

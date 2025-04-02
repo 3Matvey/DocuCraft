@@ -1,10 +1,19 @@
-﻿using DocuCraft.Application.Managers;
+﻿using DocuCraft.Application.Commands;
+using DocuCraft.Application.Managers;
+using DocuCraft.Common.ResultPattern;
+using DocuCraft.Domain.Entities;
+using DocuCraft.Domain.Interfaces;
 
 namespace DocuCraft.Presentation
 {
-    public class Terminal(DocumentManager docManager)
+    public class Terminal
     {
-        private readonly DocumentManager _docManager = docManager;
+        private readonly DocumentManager _docManager;
+
+        public Terminal(DocumentManager docManager)
+        {
+            _docManager = docManager;
+        }
 
         public void Run()
         {
@@ -25,7 +34,7 @@ namespace DocuCraft.Presentation
                         CreateDocument();
                         break;
                     case "2":
-                        OpenDocumentAsync();
+                        OpenDocumentAsync().GetAwaiter().GetResult();
                         break;
                     case "3":
                         ListDocuments();
@@ -37,7 +46,7 @@ namespace DocuCraft.Presentation
                         EditDocument();
                         break;
                     case "6":
-                        SaveDocument();
+                        SaveDocumentAsync().GetAwaiter().GetResult();
                         break;
                     case "7":
                         exit = true;
@@ -103,10 +112,15 @@ namespace DocuCraft.Presentation
             string type = GetDocumentType();
             Console.Write("Введите название документа: ");
             string title = Console.ReadLine()?.Trim() ?? "";
+            if (!title.Contains('.')) 
+            {
+                title += ".txt";
+            }
             Console.Write("Введите путь к файлу (оставьте пустым для рабочей директории): ");
             string filePath = Console.ReadLine()?.Trim() ?? "";
+            const char separator = '\\';
             if (string.IsNullOrEmpty(filePath))
-                filePath = Environment.CurrentDirectory;
+                filePath = Environment.CurrentDirectory + separator + title;
 
             var result = await _docManager.OpenDocumentAsync(type, title, filePath);
             if (result.IsSuccess)
@@ -142,58 +156,37 @@ namespace DocuCraft.Presentation
                 Console.WriteLine($"Ошибка: {result.Error?.Description}");
         }
 
-        //private void EditDocument()
-        //{
-        //    Console.Write("Введите название документа для редактирования: ");
-        //    string title = Console.ReadLine()?.Trim() ?? "";
-        //    var resultGet = _docManager.GetDocument(title);
-        //    if (!resultGet.IsSuccess)
-        //    {
-        //        Console.WriteLine($"Ошибка: {resultGet.Error?.Description}");
-        //        return;
-        //    }
+        private void EditDocument()
+        {
+            Console.Write("Введите название документа для редактирования: ");
+            string title = Console.ReadLine()?.Trim() ?? "";
+            var resultGet = _docManager.GetDocument(title);
+            if (!resultGet.IsSuccess)
+            {
+                Console.WriteLine($"Ошибка: {resultGet.Error?.Description}");
+                return;
+            }
 
-        //    Document docToEdit = resultGet.Value;
-        //    Console.WriteLine("Текущий контент:");
-        //    Console.WriteLine(docToEdit.Content);
-        //    Console.Write("Введите текст для вставки: ");
-        //    string text = Console.ReadLine() ?? "";
-        //    int position = GetIntegerInput("Введите позицию вставки: ");
-        //    try
-        //    {
-        //        docToEdit.InsertText(text, position);
-        //        Console.WriteLine("Текст успешно вставлен.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Ошибка редактирования: {ex.Message}");
-        //    }
-        //}
+            Document docToEdit = resultGet.Value;
+            Console.WriteLine("Текущий контент:");
+            Console.WriteLine(docToEdit.Content);
+            Console.Write("Введите текст для вставки: ");
+            string text = Console.ReadLine() ?? "";
+            int position = GetIntegerInput("Введите позицию вставки: ");
+            var command = new InsertTextCommand(docToEdit, text, position);
+            var result = command.Execute();
+            Console.WriteLine(result.IsSuccess ? "Текст успешно вставлен." : $"Ошибка редактирования: {result.Error?.Description}");
+        }
 
-        //private void SaveDocument()
-        //{
-        //    Console.Write("Введите название документа для сохранения: ");
-        //    string title = Console.ReadLine()?.Trim() ?? "";
-        //    var resultGet = _docManager.GetDocument(title);
-        //    if (!resultGet.IsSuccess)
-        //    {
-        //        Console.WriteLine($"Ошибка: {resultGet.Error?.Description}");
-        //        return;
-        //    }
-
-        //    Document docToSave = resultGet.Value;
-        //    Console.Write("Введите формат для сохранения (txt, json, xml): ");
-        //    string format = Console.ReadLine()?.Trim().ToLower() ?? "";
-        //    try
-        //    {
-        //        docToSave.Save(format);
-        //        Console.WriteLine($"Документ \"{title}\" успешно сохранён.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Ошибка сохранения: {ex.Message}");
-        //    }
-        //}
+        private async Task SaveDocumentAsync()
+        {
+            Console.Write("Введите название документа для сохранения: ");
+            string title = Console.ReadLine()?.Trim() ?? "";
+            Console.Write("Введите формат для сохранения (txt, json, xml): ");
+            string format = Console.ReadLine()?.Trim().ToLower() ?? "";
+            var result = await _docManager.SaveDocumentAsync(title, format);
+            Console.WriteLine(result.IsSuccess ? $"Документ \"{title}\" успешно сохранён." : $"Ошибка сохранения: {result.Error?.Description}");
+        }
 
         private static int GetIntegerInput(string prompt)
         {

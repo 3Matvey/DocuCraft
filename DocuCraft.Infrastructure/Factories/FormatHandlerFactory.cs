@@ -1,4 +1,5 @@
 ﻿using DocuCraft.Domain.Interfaces;
+using DocuCraft.Infrastructure.Formats;
 
 namespace DocuCraft.Infrastructure.Factories
 {

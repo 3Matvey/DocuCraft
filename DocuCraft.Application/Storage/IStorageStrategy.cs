@@ -6,6 +6,4 @@
         Task<Result<Document>> LoadAsync(string filePath);
         Task<Result> DeleteAsync(string filePath);
     }
-
-    public interface ILocalStorageStrategy : IStorageStrategy;
 }
