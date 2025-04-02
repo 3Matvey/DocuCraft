@@ -1,30 +1,19 @@
 ﻿using DocuCraft.Application.Storage;
 using DocuCraft.Common.ResultPattern;
 using DocuCraft.Domain.Entities;
-using DocuCraft.Domain.Interfaces;
-using DocuCraft.Infrastructure.Formats;
+using static DocuCraft.Infrastructure.Factories.FormatHandlerFactory;
 
 namespace DocuCraft.Infrastructure.Storage
 {
     public class LocalStorageStrategy() : 
         IStorageStrategy
     {
-        private static IFormatHandler GetFormatHandler(string format)
-        {
-            return format switch
-            {
-                "txt" => new TxtFormatHandler(),
-                "json" => new JsonFormatHandler(),
-                "xml" => new XmlFormatHandler(),
-                _ => throw new ArgumentException("Unsupported format")
-            };
-        }
         public async Task<Result> SaveAsync(Document document, string format)
         {
             try
             {
                 string fileName = document.GetFileName(format);
-                string serializedData = GetFormatHandler(format).Serialize(document);
+                string serializedData = GetHandler(format).Serialize(document);
 
                 await File.WriteAllTextAsync(fileName, serializedData);
                 return Result.Success();
@@ -44,7 +33,7 @@ namespace DocuCraft.Infrastructure.Storage
 
                 string data = await File.ReadAllTextAsync(filePath);
                 string format = Path.GetExtension(filePath).TrimStart('.').ToLower();
-                return GetFormatHandler(format).Deserialize(data);
+                return GetHandler(format).Deserialize(data);
             }
             catch (Exception ex)
             {
