@@ -133,19 +133,27 @@ namespace DocuCraft.Presentation
             }
         }
 
-        private void ListDocuments()
+        private bool ListDocuments()
         {
-            var docs = _docManager.ListDocuments();
-            Console.WriteLine("\nСписок документов:");
-            foreach (var doc in docs)
+            var docs = _docManager.ListDocuments().ToList();
+            if (docs.Count == 0) 
             {
-                Console.WriteLine($"- {doc.Title}");
+                Console.WriteLine("Не открыто ни одного документа");
+                return false;
             }
+            Console.WriteLine("\nСписок документов:");
+            
+            for (int i = 0; i < docs.Count; i++) 
+            {
+                Console.WriteLine($"{i + 1}. {docs[i].Title}");
+            }
+            return true;
         }
 
         private void DeleteDocument()
         {
-            Console.Write("Введите название документа для удаления: ");
+            if (!ListDocuments()) return;
+            Console.WriteLine("Введите название документа для удаления: ");
             string title = Console.ReadLine()?.Trim() ?? "";
             var result = _docManager.DeleteDocument(title);
             if (result.IsSuccess)
@@ -156,7 +164,8 @@ namespace DocuCraft.Presentation
 
         private void EditDocument()
         {
-            Console.Write("Введите название документа для редактирования: ");
+            if (!ListDocuments()) return;
+            Console.WriteLine("Введите название документа для редактирования: ");
             string title = Console.ReadLine()?.Trim() ?? "";
             var resultGet = _docManager.GetDocument(title);
             if (!resultGet.IsSuccess)
@@ -178,7 +187,8 @@ namespace DocuCraft.Presentation
 
         private async Task SaveDocumentAsync()
         {
-            Console.Write("Введите название документа для сохранения: ");
+            if(!ListDocuments()) return;
+            Console.WriteLine("Введите название документа для сохранения: ");
             string title = Console.ReadLine()?.Trim() ?? "";
             Console.Write("Введите формат для сохранения (txt, json, xml): ");
             string format = Console.ReadLine()?.Trim().ToLower() ?? "";
